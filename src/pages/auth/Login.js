@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link as RouterLink, Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import { login } from "../../actions/auth";
+import { apiLogin } from "../../actions/auth";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Box, Button, Stack, Link, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Stack,
+  Link,
+  TextField,
+  Typography,
+  // InputAdornment,
+  // SvgIcon,
+} from "@mui/material";
+// import AtSymbolIcon from "@heroicons/react/24/solid/AtSymbolIcon";
+// import LockClosedIcon from "@heroicons/react/24/solid/LockClosedIcon";
 import { Layout as AuthLayout } from "../../layouts/auth/layout";
 
-const Login = ({ isAuthenticated, login }) => {
+const Login = ({ isAuthenticated, apiLogin }) => {
+  console.log("------------");
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -23,7 +35,7 @@ const Login = ({ isAuthenticated, login }) => {
       password: Yup.string().max(255).required("Password is required"),
     }),
     onSubmit: (values) => {
-      login({
+      apiLogin({
         email: values.email,
         password: values.password,
       });
@@ -80,6 +92,15 @@ const Login = ({ isAuthenticated, login }) => {
                   onChange={formik.handleChange}
                   type="email"
                   value={formik.values.email}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <SvgIcon>
+                  //         <AtSymbolIcon />
+                  //       </SvgIcon>
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
                 <TextField
                   error={!!(formik.touched.password && formik.errors.password)}
@@ -91,6 +112,15 @@ const Login = ({ isAuthenticated, login }) => {
                   onChange={formik.handleChange}
                   type="password"
                   value={formik.values.password}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <SvgIcon>
+                  //         <LockClosedIcon />
+                  //       </SvgIcon>
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
               </Stack>
               {formik.errors.submit && (
@@ -116,7 +146,7 @@ const Login = ({ isAuthenticated, login }) => {
 };
 
 Login.propTypes = {
-  login: PropTypes.func.isRequired,
+  apiLogin: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
 };
 
@@ -124,4 +154,4 @@ const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
 });
 
-export default connect(mapStateToProps, { login })(Login);
+export default connect(mapStateToProps, { apiLogin })(Login);

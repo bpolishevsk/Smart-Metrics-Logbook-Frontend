@@ -1,5 +1,5 @@
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-import { useCallback, useState } from "react";
 import { useFormik } from "formik";
 import {
   Box,
@@ -9,107 +9,39 @@ import {
   CardContent,
   CardHeader,
   Divider,
+  MenuItem,
   TextField,
   Unstable_Grid2 as Grid,
 } from "@mui/material";
 import { BootstrapDialog } from "../../components/BootstrapDialog";
-
-const fieldTypes = [
-  {
-    value: "number",
-    label: "Number",
-  },
-  {
-    value: "text",
-    label: "Text",
-  },
-  {
-    value: "textArea",
-    label: "TextArea",
-  },
-  {
-    value: "checkBox",
-    label: "CheckBox",
-  },
-  {
-    value: "radioButton",
-    label: "RadioButton",
-  },
-  {
-    value: "datetime",
-    label: "DateTime",
-  },
-  {
-    value: "predefinedTemplates",
-    label: "Predefined Templates",
-  },
-];
-
-const chartTypes = [
-  {
-    value: "line",
-    label: "Line",
-  },
-  {
-    value: "bar",
-    label: "Bar",
-  },
-  {
-    value: "pie",
-    label: "Pie",
-  },
-];
-
-const statuses = [
-  {
-    value: "active",
-    label: "Active",
-  },
-  {
-    value: "inactive",
-    label: "Inactive",
-  },
-  {
-    value: "fixed",
-    label: "Fixed",
-  },
-];
-
-const timings = [
-  {
-    value: "daily",
-    label: "Daily",
-  },
-  {
-    value: "eachday",
-    label: "Eachday",
-  },
-  {
-    value: "everytime",
-    label: "Everytime",
-  },
-];
+import ConfirmDialog from "../../components/ConfirmModal";
+import { toast } from "react-toastify";
 
 export const MetricsDialog = (props) => {
-  const { onClose, open } = props;
+  const { onClose, open, timings, fieldTypes, chartTypes, statuses } = props;
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   const formik = useFormik({
-    initialValues: {
-      name: "",
-      description: "",
-      fieldType: fieldTypes[0].value,
-      prefix: "",
-      postfix: "",
-      chartType: chartTypes[0].value,
-      status: statuses[0].value,
-      order: "",
-      timing: timings[0].value,
-    },
+    initialValues: props.initialValues,
 
     onSubmit: (values) => {
-      props.onAddMetrics(values);
+      if (values.name === "") {
+        toast.error("You must input Metric name!");
+      } else {
+        if (values._id) {
+          setOpenDialog(true);
+        } else {
+          props.onAddMetric(values);
+          props.onClose();
+        }
+      }
     },
   });
+
+  useEffect(() => {
+    props.initialValues && formik.setValues(props.initialValues);
+    // eslint-disable-next-line
+  }, [props.initialValues]); // eslint-disable-next-line
 
   return (
     <BootstrapDialog
@@ -118,11 +50,11 @@ export const MetricsDialog = (props) => {
       aria-labelledby="customized-dialog-title"
       aria-describedby="customized-dialog-description"
     >
-      <form autoComplete="off" noValidate onSubmit={formik.handleSubmit}>
+      <form noValidate onSubmit={formik.handleSubmit}>
         <Card>
           <CardHeader
             subheader="The information can be saved"
-            title="Create/Edit Metrics"
+            title={`${props.initialValues._id ? "Edit" : "Create"} Metrics`}
           />
           <CardContent sx={{ pt: 0 }}>
             <Box sx={{ m: -1.5 }}>
@@ -132,8 +64,8 @@ export const MetricsDialog = (props) => {
                     fullWidth
                     label="Name"
                     name="name"
-                    onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     value={formik.values.name}
                   />
                 </Grid>
@@ -142,8 +74,8 @@ export const MetricsDialog = (props) => {
                     fullWidth
                     label="Description"
                     name="description"
-                    onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     value={formik.values.description}
                   />
                 </Grid>
@@ -154,15 +86,16 @@ export const MetricsDialog = (props) => {
                     name="fieldType"
                     onChange={formik.handleChange}
                     select
-                    SelectProps={{ native: true }}
                     onBlur={formik.handleBlur}
+                    SelectProps={{ native: true }}
                     value={formik.values.fieldType}
                   >
-                    {fieldTypes.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
+                    {fieldTypes &&
+                      fieldTypes.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label && option.label}
+                        </option>
+                      ))}
                   </TextField>
                 </Grid>
                 <Grid xs={12} md={6}>
@@ -170,8 +103,8 @@ export const MetricsDialog = (props) => {
                     fullWidth
                     label="Prefix"
                     name="prefix"
-                    onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     value={formik.values.prefix}
                   />
                 </Grid>
@@ -180,8 +113,8 @@ export const MetricsDialog = (props) => {
                     fullWidth
                     label="Postfix"
                     name="postfix"
-                    onBlur={formik.handleBlur}
                     onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                     value={formik.values.postfix}
                   />
                 </Grid>
@@ -196,11 +129,12 @@ export const MetricsDialog = (props) => {
                     SelectProps={{ native: true }}
                     value={formik.values.chartType}
                   >
-                    {chartTypes.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
+                    {chartTypes &&
+                      chartTypes.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label && option.label}
+                        </option>
+                      ))}
                   </TextField>
                 </Grid>
                 <Grid xs={12} md={6}>
@@ -209,16 +143,17 @@ export const MetricsDialog = (props) => {
                     label="Select Status"
                     name="status"
                     onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
                     select
+                    onBlur={formik.handleBlur}
                     SelectProps={{ native: true }}
                     value={formik.values.status}
                   >
-                    {statuses.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
+                    {statuses &&
+                      statuses.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                   </TextField>
                 </Grid>
                 <Grid xs={12} md={6}>
@@ -226,8 +161,8 @@ export const MetricsDialog = (props) => {
                     fullWidth
                     label="Order"
                     name="order"
-                    onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
                     value={formik.values.order}
                   />
                 </Grid>
@@ -242,11 +177,12 @@ export const MetricsDialog = (props) => {
                     SelectProps={{ native: true }}
                     value={formik.values.timing}
                   >
-                    {timings.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
+                    {timings &&
+                      timings.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                   </TextField>
                 </Grid>
               </Grid>
@@ -254,11 +190,26 @@ export const MetricsDialog = (props) => {
           </CardContent>
           <Divider />
           <CardActions sx={{ justifyContent: "flex-end" }}>
-            <Button variant="contained" type="submit" onClick={onClose}>
-              Save metrics
+            <Button variant="contained" type="submit">
+              {props.initialValues._id ? "Save metrics" : "Add metrics"}
+            </Button>
+
+            <Button variant="outlined" onClick={onClose}>
+              Cancel
             </Button>
           </CardActions>
         </Card>
+        <ConfirmDialog
+          openDialog={openDialog}
+          title="Confirm"
+          content="Are you sure update this Metric?"
+          onCancel={(e) => setOpenDialog(false)}
+          onOK={(e) => {
+            props.onUpdateMetric(formik.values);
+            setOpenDialog(false);
+            props.onClose();
+          }}
+        />
       </form>
     </BootstrapDialog>
   );

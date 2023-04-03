@@ -1,78 +1,62 @@
-import { api, toast } from "../utils";
 import {
-  REGISTER_SUCCESS,
-  REGISTER_FAIL,
-  USER_LOADED,
-  AUTH_ERROR,
-  LOGIN_SUCCESS,
-  LOGIN_FAIL,
-  LOGOUT,
-} from "./types";
-
+  userAuthError,
+  userLogined,
+  userLoginSuccess,
+  userLogOut,
+  userRegister,
+} from "../store/authSlice";
+import { api, setAuthToken, toast } from "../utils";
 // Load User
-export const loadUser = () => async (dispatch) => {
+export const apiLoadUser = () => async (dispatch) => {
   try {
     const res = await api.get("auth/loadUser");
     console.log(res);
-    dispatch({
-      type: USER_LOADED,
-      payload: res.data,
-    });
+
+    dispatch(userLogined(res.data.doc));
   } catch (err) {
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach((error) => console.log(error.msg));
     }
-    dispatch({
-      type: AUTH_ERROR,
-    });
+    dispatch(userAuthError());
   }
 };
 
 // Register User
-export const register = (formData) => async (dispatch) => {
+export const apiRegister = (formData) => async (dispatch) => {
   try {
     const res = await api.post("auth/register", formData);
-    dispatch({
-      type: REGISTER_SUCCESS,
-      payload: res.data,
-    });
+
+    dispatch(userRegister(res.data.doc));
+    setAuthToken(res.data.doc);
     toast.success("You are successfully registered!");
-    dispatch(loadUser());
+    dispatch(apiLoadUser());
   } catch (err) {
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach((error) => toast.error(error.msg));
     }
-    dispatch({
-      type: REGISTER_FAIL,
-    });
+
+    // dispatch(userAuthError());
   }
 };
 
 // Login User
-export const login = (formData) => async (dispatch) => {
+export const apiLogin = (formData) => async (dispatch) => {
   try {
     const res = await api.post("auth/login", formData);
 
-    dispatch({
-      type: LOGIN_SUCCESS,
-      payload: res.data,
-    });
+    dispatch(userLoginSuccess(res.data.doc));
 
-    dispatch(loadUser());
+    dispatch(apiLoadUser());
   } catch (err) {
     const errors = err.response.data.errors;
 
     if (errors) {
       errors.forEach((error) => toast.error(error.msg));
     }
-
-    dispatch({
-      type: LOGIN_FAIL,
-    });
   }
 };
 
 // Logout
-export const logout = () => ({ type: LOGOUT });
+export const apiLogout = () => userLogOut();

@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "../store";
-import { LOGOUT } from "../actions/types";
+import { userLogOut } from "../store/authSlice";
 
 // const isDev = process.env.NODE_ENV === "development";
 export const MODEL_API_URL =
@@ -28,7 +28,7 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err.response.status === 401) {
-      store.dispatch({ type: LOGOUT });
+      store.dispatch(userLogOut());
     }
     return Promise.reject(err);
   }

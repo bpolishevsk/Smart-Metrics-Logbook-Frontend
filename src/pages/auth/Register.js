@@ -1,17 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link as RouterLink, Navigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { Box, Button, Link, Stack, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Link,
+  Stack,
+  TextField,
+  Typography,
+  // InputAdornment,
+  // SvgIcon,
+} from "@mui/material";
 import PropTypes from "prop-types";
 import { Layout as AuthLayout } from "../../layouts/auth/layout";
 
 // import PropTypes from "prop-types";
 
-import { register } from "../../actions/auth";
+import { apiRegister } from "../../actions/auth";
+// import AtSymbolIcon from "@heroicons/react/24/solid/AtSymbolIcon";
+// import LockClosedIcon from "@heroicons/react/24/solid/LockClosedIcon";
+// import UserIcon from "@heroicons/react/24/solid/UserIcon";
 
-const Register = ({ register, isAuthenticated }) => {
+const Register = ({ apiRegister, isAuthenticated }) => {
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -28,7 +40,7 @@ const Register = ({ register, isAuthenticated }) => {
       password: Yup.string().max(255).required("Password is required"),
     }),
     onSubmit: (values) => {
-      register({
+      apiRegister({
         name: values.name,
         email: values.email,
         password: values.password,
@@ -84,6 +96,15 @@ const Register = ({ register, isAuthenticated }) => {
                   onBlur={formik.handleBlur}
                   onChange={formik.handleChange}
                   value={formik.values.name}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <SvgIcon>
+                  //         <UserIcon />
+                  //       </SvgIcon>
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
                 <TextField
                   error={!!(formik.touched.email && formik.errors.email)}
@@ -95,6 +116,15 @@ const Register = ({ register, isAuthenticated }) => {
                   onChange={formik.handleChange}
                   type="email"
                   value={formik.values.email}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <SvgIcon>
+                  //         <AtSymbolIcon />
+                  //       </SvgIcon>
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
                 <TextField
                   error={!!(formik.touched.password && formik.errors.password)}
@@ -106,6 +136,15 @@ const Register = ({ register, isAuthenticated }) => {
                   onChange={formik.handleChange}
                   type="password"
                   value={formik.values.password}
+                  // InputProps={{
+                  //   startAdornment: (
+                  //     <InputAdornment position="start">
+                  //       <SvgIcon>
+                  //         <LockClosedIcon />
+                  //       </SvgIcon>
+                  //     </InputAdornment>
+                  //   ),
+                  // }}
                 />
               </Stack>
               {formik.errors.submit && (
@@ -131,7 +170,7 @@ const Register = ({ register, isAuthenticated }) => {
 };
 
 Register.propTypes = {
-  register: PropTypes.func.isRequired,
+  // register: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool,
 };
 
@@ -139,4 +178,4 @@ const mapStateToProps = (state) => ({
   isAuthenticated: state.auth.isAuthenticated,
 });
 
-export default connect(mapStateToProps, { register })(Register);
+export default connect(mapStateToProps, { apiRegister })(Register);
