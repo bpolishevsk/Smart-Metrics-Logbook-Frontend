@@ -91,22 +91,22 @@ export const apiAddMetricWage = (wage) => async (dispatch) => {
 export const apiDeleteMetricWageById = (_id) => async (dispatch) => {
   try {
     await api.delete(`metrics/wage?_id=${_id}`);
+    await dispatch(apiGetMetricsLastestWagesByUserId());
     toast.success("The metric value has been successfully deleted.");
     return dispatch(deleteMetricWage({ _id: _id }));
   } catch (err) {
     const errors = err.response.data.errors;
     if (errors) {
       errors.forEach((error) => toast.error(error.msg));
-      // return dispatch(metricsError());
     }
   }
 };
 
 export const apiUpdateMetricWage = (formData) => async (dispatch) => {
-  console.log(formData);
   try {
     const res = await api.put("metrics/wage", formData);
-
+    await dispatch(apiGetMetricsLastestWagesByUserId());
+    console.log(res.data.doc);
     toast.success(" Metrics is updated!");
     return dispatch(updateMetricsWage(res.data.doc));
   } catch (err) {

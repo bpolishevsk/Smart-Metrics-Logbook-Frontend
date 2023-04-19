@@ -24,6 +24,7 @@ import {
 import ClockIcon from "@heroicons/react/24/solid/ClockIcon";
 import { apiDeleteMetricWageById } from "../../actions/metrics";
 import ConfirmDialog from "../../components/ConfirmModal";
+
 export const OverviewLatestMetricsValue = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -132,7 +133,7 @@ export const OverviewLatestMetricsValue = (props) => {
             size="small"
             variant="text"
             onClick={(e) => {
-              navigate("/metrics/viewallvalues");
+              navigate("/track");
             }}
           >
             View all
