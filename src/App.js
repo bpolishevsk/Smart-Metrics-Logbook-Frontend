@@ -1,31 +1,18 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { createTheme } from "./theme";
 import { CssBaseline } from "@mui/material";
 
-import store from "./store/index";
 import MainRoutes from "./components/routing/MainRoutes";
 import { ThemeProvider } from "@mui/material/styles";
-import { apiLoadUser } from "./actions/auth";
-import { setAuthToken } from "./utils";
 import "react-toastify/dist/ReactToastify.css";
 import "simplebar-react/dist/simplebar.min.css";
-import { userLogOut } from "./store/authSlice";
 
 import "./styles/index.scss";
 
 const App = () => {
   const theme = createTheme();
-  useEffect(() => {
-    if (localStorage.getItem("smart-metrics-logbook")) {
-      setAuthToken(localStorage.getItem("smart-metrics-logbook"));
-      store.dispatch(apiLoadUser());
-    } else {
-      store.dispatch(userLogOut());
-    }
-    window.addEventListener("storage", () => {});
-  }, []);
 
   return (
     <ThemeProvider theme={theme}>
